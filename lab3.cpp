@@ -62,13 +62,32 @@ int main (int argc, char *argv[]) {
         close(fd);
     }
 
-    // standard I/O
-
-    // write the same functionality as in Linux I/O
-
-    // but use fopen(), fgetc(), fread(), and fclose()
+    // standard I/O - write the same functionality as in Linux I/O but use fopen(), fgetc(), fread(), and fclose()
+    
+    // File *file pointer used for C/C++ standard I/O
+    FILE *file = fopen(filename, "r"); 
+    if (file == NULL) {
+        cerr << filename << "not found" << endl;
+        return -1;
+    }
+    startTimer();
+   
+    // use fread() if bytes > 1 - read file into buffer
+    while (fread(buf, sizeof(char), bytes, file) > 0) {
+        stopTimer("C/C++ fread");
+        fclose(file);
+    }
 
     // use fgetc() if bytes == 1
+    if (bytes == -1) {
+        startTimer();
+        
+        // read file one byte at a time until EOF is reached
+        while (fgetc(file) != EOF) {
+            stopTimer("C/C++ fgetc");
+            fclose(file);
+        }
+    }
 
     return 0;
 } 
