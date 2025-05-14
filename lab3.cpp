@@ -57,33 +57,27 @@ int main (int argc, char *argv[]) {
         return -1;
     }
     startTimer();
-    while (read(fd, buf, bytes) > 0) {
-        stopTimer("Unix read");
-        close(fd);
-    }
+    while (read(fd, buf, bytes) > 0);
+    stopTimer("Unix read");
+    close(fd);
 
-    // Standard I/O
+    // Standard I/O - use fopen(), fgetc(), fread(), fclose()
     FILE *fp = fopen(filename, "r");
     if (fp == NULL) {
         cerr << filename << "not found" << endl;
         return -1;
     }
-    if (bytes > 1) {
-        startTimer();
-        while (fread(buf, sizeof(char), bytes, fp) > 0) {
-            // read
-        }
-        stopTimer("Standard fread");
+    startTimer();
+    
+    // if bytes == 1, use fgetc() to read one byte at a time
+    if (bytes == 1) {
+        while (fgetc(fp) != EOF);
     }
-    else if (bytes == 1) {
-        startTimer();
-        while (fgetc(fp) != EOF) {
-            // read
-        }
-        stopTimer("Standard fgetc");
+    else {
+        while (fread(buf, sizeof(char), bytes, fp) > 0);
     }
+    stopTimer("Standard fread");
     fclose(fp);
     delete[] buf;
-    buf = NULL;
     return 0;
 } 
